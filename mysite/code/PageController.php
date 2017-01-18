@@ -27,5 +27,18 @@ class PageController extends ContentController
 		parent::init();
 		// You can include any CSS or JS required by your project here.
 		// See: https://docs.silverstripe.org/en/developer_guides/templates/requirements/
+		/** Auto-load JS files from $ThemeDir/javascript directory */
+		$ThemeDir = $this->ThemeDir();
+		$js_folder = $ThemeDir.DIRECTORY_SEPARATOR.'javascript'.DIRECTORY_SEPARATOR;
+		$files = glob(BASE_PATH.DIRECTORY_SEPARATOR.$js_folder.'*.js');
+		$files = array_map(function($file) use($ThemeDir) {
+			return $ThemeDir.DIRECTORY_SEPARATOR.'javascript'.DIRECTORY_SEPARATOR.pathinfo($file, PATHINFO_BASENAME);
+		},$files);
+		Requirements::combine_files(SSViewer::current_theme().'js', $files);
+	}
+
+	/** Check if environment is in dev mode */
+	public function isDev()	{
+		return Director::get_environment_type() == 'dev';
 	}
 }
